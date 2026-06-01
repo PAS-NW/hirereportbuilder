@@ -268,6 +268,115 @@ st.markdown(
 )
 
 
+
+st.markdown(
+    """
+    <style>
+    /* Bottom chase animation: small, low, runs once */
+    .pas-bottom-chase-wrap {
+        position: fixed;
+        left: calc(18rem + 22px);
+        right: 42px;
+        bottom: 12px;
+        height: 58px;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    .pas-bottom-ground {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 6px;
+        border-bottom: 1px solid rgba(0,0,0,0.11);
+    }
+    .pas-chase-pack {
+        position: absolute;
+        bottom: 8px;
+        left: -150px;
+        width: 150px;
+        height: 48px;
+        animation: pas-chase-run 13s linear 1 forwards;
+    }
+    @keyframes pas-chase-run {
+        0% { transform: translateX(-120px); opacity: 0; }
+        8% { opacity: 1; }
+        88% { opacity: 1; }
+        100% { transform: translateX(calc(100vw - 90px)); opacity: 0; }
+    }
+    .pas-truck-mini { position: absolute; left: 0; bottom: 5px; width: 54px; height: 30px; filter: drop-shadow(0 1px 1px rgba(0,0,0,.22)); }
+    .pas-truck-bed { position: absolute; left: 0; top: 5px; width: 34px; height: 19px; background: #FFD400; border: 3px solid #0A0A0A; border-radius: 4px 2px 3px 5px; transform: skewX(-10deg); }
+    .pas-truck-logo { position: absolute; left: 7px; top: 9px; font-size: 9px; font-weight: 950; color: #0A0A0A; line-height: 1; z-index: 3; }
+    .pas-truck-cab { position: absolute; left: 30px; top: 7px; width: 19px; height: 18px; background: #FFD400; border: 3px solid #0A0A0A; border-radius: 3px 5px 3px 2px; z-index: 2; }
+    .pas-truck-window { position: absolute; left: 34px; top: 10px; width: 7px; height: 7px; background: #a8d8e8; border: 2px solid #0A0A0A; border-radius: 2px; z-index: 4; }
+    .pas-truck-nose { position: absolute; left: 47px; top: 17px; width: 8px; height: 8px; background: #FFD400; border: 3px solid #0A0A0A; border-left: none; border-radius: 0 3px 3px 0; }
+    .pas-wheel { position: absolute; bottom: 0; width: 9px; height: 9px; background: #0A0A0A; border: 2px solid #222; border-radius: 50%; animation: pas-wheel-spin .32s linear infinite; z-index: 5; }
+    .pas-wheel::after { content: ""; position: absolute; inset: 2px; background: #FFD400; border-radius: 50%; }
+    .pas-wheel.back { left: 13px; }
+    .pas-wheel.front { left: 41px; }
+    @keyframes pas-wheel-spin { to { transform: rotate(360deg); } }
+    .pas-speed-lines { position: absolute; left: -30px; top: 17px; width: 24px; height: 18px; }
+    .pas-speed-lines span { display:block; height:2px; background:#b9b9b9; margin:4px 0; border-radius:2px; animation: pas-flicker .55s linear infinite; }
+    .pas-speed-lines span:nth-child(2) { width: 16px; margin-left: 8px; }
+    .pas-speed-lines span:nth-child(3) { width: 11px; margin-left: 13px; }
+    @keyframes pas-flicker { 50% { opacity:.25; transform: translateX(-5px); } }
+    .pas-dust { position:absolute; left:-5px; bottom:0; width:34px; height:14px; opacity:.75; }
+    .pas-dust span { position:absolute; bottom:0; background:#dac6a9; border-radius:50%; animation: pas-dust 1s linear infinite; }
+    .pas-dust span:nth-child(1) { width:12px; height:6px; left:0; }
+    .pas-dust span:nth-child(2) { width:16px; height:7px; left:10px; animation-delay:.2s; }
+    .pas-dust span:nth-child(3) { width:11px; height:5px; left:23px; animation-delay:.4s; }
+    @keyframes pas-dust { 50% { transform: translateX(-8px) scale(1.15); opacity:.4; } }
+    .pas-stickman { position: absolute; left: 92px; bottom: 5px; width: 28px; height: 34px; animation: pas-runner-bob .35s ease-in-out infinite alternate; }
+    @keyframes pas-runner-bob { from { transform: translateY(1px); } to { transform: translateY(-2px); } }
+    .pas-stick-head { position:absolute; top:0; left:11px; width:8px; height:8px; border:2px solid #111; border-radius:50%; background:white; }
+    .pas-stick-body { position:absolute; left:15px; top:9px; width:2px; height:13px; background:#111; transform: rotate(12deg); transform-origin:top; }
+    .pas-stick-arm-a, .pas-stick-arm-b, .pas-stick-leg-a, .pas-stick-leg-b { position:absolute; width:2px; height:12px; background:#111; transform-origin:top; border-radius:2px; }
+    .pas-stick-arm-a { left:15px; top:11px; transform: rotate(58deg); animation: pas-arm-a .35s linear infinite alternate; }
+    .pas-stick-arm-b { left:15px; top:11px; transform: rotate(-50deg); animation: pas-arm-b .35s linear infinite alternate; }
+    .pas-stick-leg-a { left:16px; top:21px; height:14px; transform: rotate(48deg); animation: pas-leg-a .35s linear infinite alternate; }
+    .pas-stick-leg-b { left:16px; top:21px; height:14px; transform: rotate(-42deg); animation: pas-leg-b .35s linear infinite alternate; }
+    @keyframes pas-arm-a { to { transform: rotate(-45deg); } }
+    @keyframes pas-arm-b { to { transform: rotate(55deg); } }
+    @keyframes pas-leg-a { to { transform: rotate(-45deg); } }
+    @keyframes pas-leg-b { to { transform: rotate(48deg); } }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+def render_bottom_chase():
+    st.markdown(
+        """
+        <div class="pas-bottom-chase-wrap" aria-hidden="true">
+            <div class="pas-bottom-ground"></div>
+            <div class="pas-chase-pack">
+                <div class="pas-speed-lines"><span></span><span></span><span></span></div>
+                <div class="pas-dust"><span></span><span></span><span></span></div>
+                <div class="pas-truck-mini">
+                    <div class="pas-truck-bed"></div>
+                    <div class="pas-truck-logo">PAS</div>
+                    <div class="pas-truck-cab"></div>
+                    <div class="pas-truck-window"></div>
+                    <div class="pas-truck-nose"></div>
+                    <div class="pas-wheel back"></div>
+                    <div class="pas-wheel front"></div>
+                </div>
+                <div class="pas-stickman">
+                    <div class="pas-stick-head"></div>
+                    <div class="pas-stick-body"></div>
+                    <div class="pas-stick-arm-a"></div>
+                    <div class="pas-stick-arm-b"></div>
+                    <div class="pas-stick-leg-a"></div>
+                    <div class="pas-stick-leg-b"></div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def logo_available() -> bool:
     return Path("pas_logo.png").exists() or Path("assets/pas_logo.png").exists()
 
@@ -467,24 +576,36 @@ def write_hire_audit(wb, grouped, run_date):
     if "Hire Audit" not in wb.sheetnames:
         raise ValueError("Template is missing the 'Hire Audit' tab.")
     ws = wb["Hire Audit"]
+
+    # Clear old values but keep the sheet structure.
     for row in range(2, ws.max_row + 1):
         for col in range(1, 14):
             ws.cell(row, col).value = None
+
+    # Force consistent borders/styles from the known good template row.
+    # This fixes the occasional missing grid lines, e.g. rows 20/21 on Hire Audit.
+    style_source_row = 2
+
     row_num = 2
     for job_no, data in grouped:
-        site_name = clean_cell(data["Site Name"].iloc[0])
-        if not site_name:
-            site_name = ""
-        if row_num > ws.max_row:
-            copy_row_style(ws, 2, row_num, 13)
+        site_name = clean_cell(data["Site Name"].iloc[0]) or ""
+        copy_row_style(ws, style_source_row, row_num, 13)
+
         ws.cell(row_num, 1).value = job_no
         ws.cell(row_num, 2).value = site_name
         ws.cell(row_num, 3).value = run_date
         ws.cell(row_num, 3).number_format = "dd/mm/yyyy"
+
+        # Only A, B and C are completed. Everything else stays blank.
         for col in range(4, 14):
             ws.cell(row_num, col).value = None
         row_num += 1
 
+    # Also normalise the visible blank rows so the printed sheet never has missing borders.
+    for blank_row in range(row_num, ws.max_row + 1):
+        copy_row_style(ws, style_source_row, blank_row, 13)
+        for col in range(1, 14):
+            ws.cell(blank_row, col).value = None
 
 def build_excel_workbook(template_path: Path, hire_df: pd.DataFrame):
     wb = load_workbook(template_path)
@@ -621,6 +742,23 @@ def render_jobs_table(created_jobs):
 st.markdown('<div class="pas-upload-card"><div class="pas-upload-title">Upload Material & Plant Orders workbook</div>', unsafe_allow_html=True)
 orders_file = st.file_uploader("Upload Material & Plant Orders", type=["xlsx", "xlsm", "xls"], label_visibility="collapsed", key="orders_upload")
 if orders_file:
+    st.markdown(
+        """
+        <style>
+        /* Hide the Streamlit uploader controls once a file is selected. */
+        div[data-testid="stFileUploader"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     render_selected_file_card(orders_file, "excel")
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -700,3 +838,6 @@ if results is not None:
         )
 else:
     st.info("Upload Material & Plant Orders, then click Build hire reports.")
+
+
+render_bottom_chase()
