@@ -873,4 +873,6 @@ else:
     st.info("Upload Material & Plant Orders, then click Build hire reports.")
 
 
-render_bottom_chase()
+if "animation_shown" not in st.session_state:
+    render_bottom_chase()
+    st.session_state["animation_shown"] = True
