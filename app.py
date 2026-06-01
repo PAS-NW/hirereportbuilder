@@ -398,6 +398,7 @@ with st.sidebar:
         <div class="pas-nav-row"><span class="pas-nav-icon"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg></span><span>Build Hire Reports</span></div>
         <div class="pas-nav-row"><span class="pas-nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span><span>Download Excel</span></div>
         <div class="pas-nav-row"><span class="pas-nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span><span>Download PDF Pack</span></div>
+        <div class="pas-nav-row"><span class="pas-nav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg></span><span>Smoke Crack</span></div>
         <div class="pas-sidebar-rule"></div>
         <div class="pas-sidebar-footer">PAS NW Ltd • v1.0 Prototype Build</div>
         """,
@@ -534,6 +535,37 @@ def clear_body_rows(ws, start_row=2, max_col=9):
     for row in range(start_row, ws.max_row + 1):
         for col in range(1, max_col + 1):
             ws.cell(row, col).value = None
+
+
+def autosize_site_columns(ws):
+    """Auto-size generated site tabs, with extra room for Fleet No. and User/Gang."""
+    for column_cells in ws.columns:
+        column_letter = column_cells[0].column_letter
+        max_length = 0
+
+        for cell in column_cells:
+            value = cell.value
+            if value is None:
+                continue
+
+            if isinstance(value, (datetime, date)):
+                display_value = value.strftime("%d/%m/%Y")
+            else:
+                display_value = clean_cell(value)
+
+            if display_value:
+                max_length = max(max_length, len(str(display_value)))
+
+        if max_length:
+            ws.column_dimensions[column_letter].width = min(max(max_length + 3, 10), 60)
+
+    # Force important columns to be wide enough even when values are short.
+    ws.column_dimensions["B"].width = max(ws.column_dimensions["B"].width or 0, 18)  # Fleet No.
+    ws.column_dimensions["I"].width = max(ws.column_dimensions["I"].width or 0, 28)  # User/Gang
+
+    # Keep Description sensible so it does not become enormous.
+    if ws.column_dimensions["A"].width:
+        ws.column_dimensions["A"].width = min(ws.column_dimensions["A"].width, 55)
 
 
 def extract_hire_rows(uploaded_file) -> pd.DataFrame:
@@ -691,7 +723,8 @@ def make_pdf_for_job(job_no: str, site_name: str, data: pd.DataFrame, run_date) 
             Paragraph(escape(clean_cell(row.get("Job No", ""))), cell_style),
             Paragraph(escape(clean_cell(row.get("User/Gang", ""))), cell_style),
         ])
-    col_widths = [54*mm, 20*mm, 32*mm, 12*mm, 27*mm, 29*mm, 24*mm, 18*mm, 44*mm]
+    # Wider Fleet No. and User/Gang columns for cleaner PDF output.
+    col_widths = [50*mm, 24*mm, 30*mm, 11*mm, 27*mm, 29*mm, 23*mm, 17*mm, 49*mm]
     table = Table(table_data, colWidths=col_widths, repeatRows=1)
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(PAS_YELLOW)),
